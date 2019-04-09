@@ -104,7 +104,7 @@ namespace ODebug
         //set the panel UI on/off
         public static void SetUIPanelEnabled(string _panel, bool _enabled)
         {
-            DebugBox temp;
+            DebugBox temp = null;
             if (PanelExistTest(FindUIPanel(_panel, true), "Toggle UI", out temp))
             {
                 temp.SetGUIEnabled(_enabled);
@@ -114,7 +114,7 @@ namespace ODebug
         //clear text of a panel UI
         public static void ClearUIPanel(string _panel)
         {
-            DebugBox temp;
+            DebugBox temp = null;
             if (PanelExistTest(FindUIPanel(_panel, true), "Clear UI", out temp))
             {
                 temp.ClearText();
@@ -124,7 +124,7 @@ namespace ODebug
         //set the panel's writeToDisk on/off
         public static void SetPanelWriteToDisk(string _panel, bool _writeToDisk)
         {
-            DebugBox temp;
+            DebugBox temp = null;
             if (PanelExistTest(FindUIPanel(_panel, true), "Toggle UI Write to disk", out temp))
             {
                 temp.SetWriteToDisk(_writeToDisk);
@@ -134,7 +134,7 @@ namespace ODebug
         //try to return existing DebugBox
         internal static DebugBox FindUIPanel(string _panel = "Default", bool justSearching = false)
         {
-            DebugBox ret;
+            DebugBox ret = null;
 
             //check if debugPanel exists
             if (debugPanels.TryGetValue(_panel, out ret))
@@ -146,9 +146,8 @@ namespace ODebug
             {
                 return null;
             }
-
             //return newly created debug
-            return CreateUIPanel(new Rect(400, 400, 400, 400), _panel);
+            return CreateUIPanel(new Rect(400, 400, 400, 400), _panel, false, false);
 
         }
 
@@ -161,7 +160,7 @@ namespace ODebug
         //create debug box
         internal static DebugBox CreateUIPanel(Rect _rect, string _panel = "Default", bool _writeToDisk = true, bool _enabledOnCreation = false)
         {
-            DebugBox ret;
+            DebugBox ret = null;
 
             //try to see if panel exists
             if (debugPanels.TryGetValue(_panel, out ret))
@@ -176,9 +175,9 @@ namespace ODebug
             GameObject DebugObj = new GameObject("DebugObj");
             GameObject.DontDestroyOnLoad(DebugObj);
             DebugObj.transform.parent = m_obj.transform;
+
             ret = DebugObj.AddComponent<DebugBox>(new DebugBox(_panel, _rect, 100, currentGUIID++, _writeToDisk));
             ret.SetGUIEnabled(_enabledOnCreation);
-
 
             //add panel then return
             debugPanels.Add(_panel, ret);
@@ -188,7 +187,7 @@ namespace ODebug
         public static void DestroyUIPanel(string _panel)
         {
             //grab DebugBox
-            DebugBox temp;
+            DebugBox temp = null;
             if (PanelExistTest(FindUIPanel(_panel, true), "Destroy UI", out temp))
             {
                 temp.OnApplicationQuit();
