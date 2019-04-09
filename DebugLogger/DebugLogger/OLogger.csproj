@@ -7,8 +7,8 @@
     <ProjectGuid>{D8EB07F8-E98E-4702-B56C-28460A125E29}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Debug</RootNamespace>
-    <AssemblyName>DebugLogger</AssemblyName>
+    <RootNamespace>ODebug</RootNamespace>
+    <AssemblyName>OLogger</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -63,8 +63,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DebuggerLogClass.cs" />
+    <Compile Include="DebugBox.cs" />
+    <Compile Include="DebugType.cs" />
+    <Compile Include="Mod.cs" />
+    <Compile Include="OLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnityDebugIgnore.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
