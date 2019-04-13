@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Runtime;
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Diagnostics;
 
 namespace ODebug
 {
@@ -10,18 +12,20 @@ namespace ODebug
     public static class OLogger
     {
         //store debug box variables
-        private static Dictionary<string, DebugBox> debugPanels = new Dictionary<string, DebugBox>();
-        private static int currentGUIID = 0;
+        private static Dictionary<string, DebugBox> m_debugPanels = new Dictionary<string, DebugBox>();
+        private static int m_currentGUIID = 0;
         private static GameObject m_obj;
 
         //store Unity Debug ignore data
         public static IgnoreData ignoreList = new IgnoreData();
 
+        public static int maxSetupTextTime = 3;
+
         //function to hook into so OLogger can debug as Unity
         public static void DebugMethodHook(string logString, string stackTrace, LogType type)
         {
             //check if current log string is in ignore list
-            foreach (string _toCheck in ignoreList.ignoreInDefaultCompiler)
+            foreach (string _toCheck in ignoreList.m_ignoreInDefaultCompiler)
             {
                 if (logString.Contains(_toCheck))
                 {
@@ -50,10 +54,6 @@ namespace ODebug
                 default:
                     break;
             }
-
-            //log the stack trace to panel
-            Log(stackTrace, null, "Default Unity Stack Trace");
-
         }
 
         //setup base folder
@@ -137,7 +137,7 @@ namespace ODebug
             DebugBox ret = null;
 
             //check if debugPanel exists
-            if (debugPanels.TryGetValue(_panel, out ret))
+            if (m_debugPanels.TryGetValue(_panel, out ret))
             {
                 return ret;
             }
@@ -146,27 +146,24 @@ namespace ODebug
             {
                 return null;
             }
+
             //return newly created debug
-            return CreateUIPanel(new Rect(400, 400, 400, 400), _panel, false, false);
+            return CreateUIPanel(new Rect(400, 400, 400, 400), _panel, true, true);
 
         }
 
         //expose function to create panel
         public static void CreateLog(Rect _rect, string _panel = "Default", bool _writeToDisk = true, bool _enabledOnCreation = true)
         {
-            CreateUIPanel(_rect, _panel, _writeToDisk, _enabledOnCreation);
+            if (FindUIPanel(_panel, true) == null)
+            {
+                CreateUIPanel(_rect, _panel, _writeToDisk, _enabledOnCreation);
+            }
         }
 
         //create debug box
         internal static DebugBox CreateUIPanel(Rect _rect, string _panel = "Default", bool _writeToDisk = true, bool _enabledOnCreation = false)
         {
-            DebugBox ret = null;
-
-            //try to see if panel exists
-            if (debugPanels.TryGetValue(_panel, out ret))
-            {
-                return ret;
-            }
 
             //check if master object is needed
             SetupObject();
@@ -176,11 +173,11 @@ namespace ODebug
             GameObject.DontDestroyOnLoad(DebugObj);
             DebugObj.transform.parent = m_obj.transform;
 
-            ret = DebugObj.AddComponent<DebugBox>(new DebugBox(_panel, _rect, 100, currentGUIID++, _writeToDisk));
+            DebugBox ret = DebugObj.AddComponent<DebugBox>(new DebugBox(_panel, _rect, 100, m_currentGUIID++, _writeToDisk));
             ret.SetGUIEnabled(_enabledOnCreation);
 
             //add panel then return
-            debugPanels.Add(_panel, ret);
+            m_debugPanels.Add(_panel, ret);
             return ret;
         }
 
@@ -191,7 +188,8 @@ namespace ODebug
             if (PanelExistTest(FindUIPanel(_panel, true), "Destroy UI", out temp))
             {
                 temp.OnApplicationQuit();
-                debugPanels.Remove(_panel);
+                GameObject.Destroy(temp.gameObject);
+                m_debugPanels.Remove(_panel);
             }
         }
 

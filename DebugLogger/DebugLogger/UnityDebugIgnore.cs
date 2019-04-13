@@ -6,14 +6,14 @@ namespace ODebug
     //store message and message Color data
     public class IgnoreData
     {
-        internal List<string> ignoreInDefaultCompiler = new List<string>();
+        internal List<string> m_ignoreInDefaultCompiler = new List<string>();
 
         //Add a list of strings to the ignoreList
         public void AddToIgnore(params string[] _toAdd)
         {
             for (int a = 0; a < _toAdd.Length; a++)
             {
-                ignoreInDefaultCompiler.Add(_toAdd[a]);
+                m_ignoreInDefaultCompiler.Add(_toAdd[a]);
             }
         }
 
@@ -22,7 +22,7 @@ namespace ODebug
         {
             for (int a = 0; a < _toRemove.Length; a++)
             {
-                ignoreInDefaultCompiler.Remove(_toRemove[a]);
+                m_ignoreInDefaultCompiler.Remove(_toRemove[a]);
             }
         }
 
